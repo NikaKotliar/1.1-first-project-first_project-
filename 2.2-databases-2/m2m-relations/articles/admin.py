@@ -1,35 +1,26 @@
 from django.contrib import admin
+from django.core.exceptions import ValidationError
+from django.forms import BaseInlineFormSet
 
-from .models import Article, Tags
+from .models import Article, Tags, Tags_position
 
 
-#
-# class RelationshipInlineFormset(BaseInlineFormSet):
-#     def clean(self):
-#         for form in self.forms:
-#             # В form.cleaned_data будет словарь с данными
-#             # каждой отдельной формы, которые вы можете проверить
-#             form.cleaned_data
-#             # вызовом исключения ValidationError можно указать админке о наличие ошибки
-#             # таким образом объект не будет сохранен,
-#             # а пользователю выведется соответствующее сообщение об ошибке
-#             raise ValidationError('Тут всегда ошибка')
-#         return super().clean()  # вызываем базовый код переопределяемого метода
-#
-#
-# class RelationshipInline(admin.TabularInline):
-#     model = Relationship
-#     formset = RelationshipInlineFormset
-# @admin.register(Tags)
-# class ObjectAdmin(admin.ModelAdmin):
-#     inlines = [RelationshipInline]
+class Tags_positionInlineFormset(BaseInlineFormSet):
+    def clean(self):
+        forms_not_deleted = [f for f in self.forms if not f.cleaned_data['DELETE']]
+        forms_main = [f for f in forms_not_deleted if f.cleaned_data['is_main'] ]
+        if len(forms_main) > 1:
+            raise ValidationError('Че то не так')
+        return super().clean()
 
-@admin.register(Tags)
-class TagsAdmin(admin.ModelAdmin):
-    pass
 
+class Tags_positionInline(admin.TabularInline):
+    model = Tags_position
+    extra = 0
+    formset = Tags_positionInlineFormset
 
 
 @admin.register(Article)
 class ArticleAdmin(admin.ModelAdmin):
+    inlines = [Tags_positionInline]
     pass
