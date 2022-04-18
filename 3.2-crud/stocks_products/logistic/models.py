@@ -6,6 +6,9 @@ class Product(models.Model):
     title = models.CharField(max_length=60, unique=True)
     description = models.TextField(null=True, blank=True)
 
+    def __str__(self):
+        return f'{self.title} -  {self.description}'
+
 
 class Stock(models.Model):
     address = models.CharField(max_length=200, unique=True)
@@ -33,3 +36,6 @@ class StockProduct(models.Model):
         decimal_places=2,
         validators=[MinValueValidator(0)],
     )
+
+    def __str__(self):
+        return f' На складе {self.stock} лежит {self.product} продуктов, кол-во {self.quantity} по цене {self.price}'
