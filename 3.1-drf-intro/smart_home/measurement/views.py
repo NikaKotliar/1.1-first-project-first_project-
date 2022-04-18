@@ -24,8 +24,7 @@ class DemoView(ListAPIView):
     serializer_class = SensorSerializer
 
     def post(self, request):
-        sensor = request.data.get('sensor')
-        serializer = SensorSerializer(data=sensor)
+        serializer = SensorSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             sensor_saved = serializer.save()
             return Response({'status': 'ok'})
@@ -43,16 +42,18 @@ class MeasurementView(APIView):
 
 
 # 2. Изменить датчик. Указываются название и/или описание.
+# @api_view(['PATCH'])
 class SensorUpdateView(APIView):
 
-    def put(self, request, pk):
+    def patch(self, request, pk):
         saved_sensor = get_object_or_404(Sensor.objects.all(), pk=pk)
+        print(saved_sensor)
         data = request.data.get('updation')
         serializer = SensorSerializer(instance=saved_sensor, data=data, partial=True)
         if serializer.is_valid(raise_exception=True):
             saved_sensor = serializer.save()
         return Response({
-            "success": "Sensor '{}' updated successfully".format(saved_sensor.title)
+            "success": "Sensor '{}' updated successfully".format(saved_sensor)
         })
 
 
