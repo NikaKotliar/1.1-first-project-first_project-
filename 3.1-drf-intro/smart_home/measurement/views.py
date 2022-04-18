@@ -4,7 +4,6 @@ from rest_framework.decorators import api_view
 from rest_framework.generics import ListAPIView, RetrieveAPIView, get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
 from measurement.models import Sensor
 from measurement.serializers import SensorSerializer, MeasurementSerializer, SensorDetailSerializer
 
@@ -18,7 +17,6 @@ def demo(request):
 
 
 # 3. Создать датчик. Указываются название и описание датчика.
-
 class DemoView(ListAPIView):
     queryset = Sensor.objects.all()
     serializer_class = SensorSerializer
@@ -42,7 +40,6 @@ class MeasurementView(APIView):
 
 
 # 2. Изменить датчик. Указываются название и/или описание.
-# @api_view(['PATCH'])
 class SensorUpdateView(APIView):
 
     def patch(self, request, pk):
@@ -59,10 +56,8 @@ class SensorUpdateView(APIView):
 
 # 5. Получить информацию по конкретному датчику.
 # Выдается полная информация по датчику: ID, название, описание и список всех измерений с температурой и временем.
-
 class SensorView(RetrieveAPIView):
     queryset = Sensor.objects.all()
-    # queryset = Sensor.objects.prefetch_related('measurement_id')
     serializer_class = SensorDetailSerializer
 
 
