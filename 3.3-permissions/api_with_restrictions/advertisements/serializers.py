@@ -16,7 +16,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 class AdvertisementSerializer(serializers.ModelSerializer):
     """Serializer для объявления."""
-    # creator = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    creator = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     creator = UserSerializer(
         read_only=True,

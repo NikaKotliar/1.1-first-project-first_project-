@@ -1,5 +1,6 @@
 from django_filters import FilterSet, DateFromToRangeFilter
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.authentication import TokenAuthentication
 from rest_framework.filters import SearchFilter
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
@@ -15,7 +16,7 @@ class F(FilterSet):
 
     class Meta:
         model = Advertisement
-        fields = ['created_at','creator', 'status' ]
+        fields = ['created_at', 'creator', 'status']
 
 
 class AdvertisementViewSet(ModelViewSet):
@@ -23,12 +24,17 @@ class AdvertisementViewSet(ModelViewSet):
     queryset = Advertisement.objects.all()
     print(Advertisement.objects.all())
     serializer_class = AdvertisementSerializer
+
     # TODO: настройте ViewSet, укажите атрибуты для кверисета,
     #   сериализаторов и фильтров
+    # def perform_create(self, serializer):
+    #     serializer.save(user=self.request.user)
+
+    authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAutoriseOrReadOnly, IsOwnerOrReadOnly)
     filter_backends = [DjangoFilterBackend]
     filter_class = F
-    throttle_classes = [AnonRateThrottle,UserRateThrottle]
+    throttle_classes = [AnonRateThrottle, UserRateThrottle]
 
     # def get_permissions(self):
     #     """Получение прав для действий."""
