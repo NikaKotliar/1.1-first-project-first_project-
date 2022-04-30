@@ -13,5 +13,5 @@ class CoursesViewSet(ModelViewSet):
     serializer_class = CourseSerializer
     filterset_class = CourseFilter
     filter_backends = [DjangoFilterBackend, SearchFilter ]
-    search_fields = ['name']
+    search_fields = ['id', 'name']
 

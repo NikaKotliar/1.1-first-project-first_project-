@@ -11,8 +11,6 @@ from advertisements.permissions import IsAutoriseOrReadOnly, IsOwnerOrReadOnly
 
 
 
-
-
 class AdvertisementViewSet(ModelViewSet):
     """ViewSet для объявлений."""
     queryset = Advertisement.objects.all()

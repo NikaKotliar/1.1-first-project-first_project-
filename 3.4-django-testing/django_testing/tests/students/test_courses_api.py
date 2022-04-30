@@ -30,19 +30,22 @@ def student_factory():
 
 
 # проверка получения 1го курса (retrieve-логика)
-
 @pytest.mark.django_db
-def test_get_1_cours(client, course_factory, student_factory):
-    students = student_factory(_quantity=3)
-    course = course_factory()
-    course.students.add(students[0], students[1], students[2])
+def test_get_1_course_id_from_path(client, course_factory, student_factory):
+    range = 10
+    random_int = randint(1, range)
+    students = student_factory(_quantity=range)
+    courses = course_factory(_quantity=range)
 
-    response = client.get(COURSE_URL)
-    data = response.json()
+    for i, course in enumerate(courses):
+        for i, student in enumerate(students):
+            course.students.add(student)
+
+    url = '/api/v1/courses/' + str(random_int) + '/'
+    response = client.get(url)
     assert response.status_code == 200
-    assert data[0]['name'] == course.name
-    assert len(data) == 1
-
+    data = response.json()
+    assert data['name'] == courses[random_int-1].name
 
 # проверка получения списка курсов (list-логика)
 @pytest.mark.django_db
@@ -68,25 +71,7 @@ def test_get_courses(client, course_factory, student_factory):
 # проверка фильтрации списка курсов по id
 # создаем курсы через фабрику, передать id одного курса в фильтр, проверить результат запроса с фильтром
 @pytest.mark.django_db
-def test_get_course_by_id(client, course_factory, student_factory):
-    range = 10
-    random_int = randint(1, range)
-    students = student_factory(_quantity=range)
-    courses = course_factory(_quantity=range)
-
-    for i, course in enumerate(courses):
-        for i, student in enumerate(students):
-            course.students.add(student)
-
-    url = '/api/v1/courses/' + str(random_int) + "/"
-    response = client.get(url)
-    assert response.status_code == 200
-    data = response.json()
-    assert data['name'] == courses[random_int - 1].name
-
-    # проверка фильтрации списка курсов по name
-@pytest.mark.django_db
-def test_get_course_by_name(client, course_factory, student_factory):
+def test_get_1_course_by_id_from_query_params(client, course_factory, student_factory):
     range = 15
     random_int = randint(1, range)
     target_course = int(random_int - 1)
@@ -97,7 +82,38 @@ def test_get_course_by_name(client, course_factory, student_factory):
         for i, student in enumerate(students):
             course.students.add(student)
 
-    url = '/api/v1/courses/' + '?search=' + courses[target_course].name
+    url = '/api/v1/courses/' + '?id=' + str(courses[target_course].id)
+    response = client.get(url)
+    assert response.status_code == 200
+    data = response.json()
+    assert len(data) == 1
+    assert data[0]["id"] == courses[target_course].id
+
+    # students = student_factory(_quantity=3)
+    # course = course_factory()
+    # course.students.add(students[0], students[1], students[2])
+    #
+    # response = client.get(COURSE_URL)
+    # data = response.json()
+    # assert response.status_code == 200
+    # assert data[0]['name'] == course.name
+    # assert len(data) == 1
+
+
+    # проверка фильтрации списка курсов по name
+@pytest.mark.django_db
+def test_get_course_by_name_from_query_params(client, course_factory, student_factory):
+    range = 15
+    random_int = randint(1, range)
+    target_course = int(random_int - 1)
+    students = student_factory(_quantity=range)
+    courses = course_factory(_quantity=range)
+
+    for i, course in enumerate(courses):
+        for i, student in enumerate(students):
+            course.students.add(student)
+
+    url = '/api/v1/courses/' + '?name=' + courses[target_course].name
     response = client.get(url)
     assert response.status_code == 200
     data = response.json()
